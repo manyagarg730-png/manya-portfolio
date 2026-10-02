@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, TrendingUp } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import CharacterCanvas from './CharacterCanvas';
 
 export default function HeroSection({ onOpenResume }) {
@@ -17,8 +17,8 @@ export default function HeroSection({ onOpenResume }) {
       {/* 1080p Zero-ghosting interactive character canvas */}
       <CharacterCanvas />
 
-      {/* Hero Content Overlay: Positioned cleanly on the left */}
-      <div className="absolute bottom-8 sm:bottom-12 md:bottom-14 left-5 sm:left-10 md:left-14 lg:left-18 z-10 max-w-[320px] sm:max-w-sm md:max-w-md space-y-3.5 sm:space-y-4 pointer-events-none">
+      {/* Hero Content Overlay: Positioned cleanly on the left with generous spacing */}
+      <div className="absolute bottom-8 sm:bottom-12 md:bottom-14 left-6 sm:left-10 md:left-14 lg:left-16 z-10 max-w-[300px] sm:max-w-sm md:max-w-md space-y-3 sm:space-y-4 pointer-events-none">
         
         {/* Status Badge */}
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/45 backdrop-blur-md border border-white/20 text-white/95 text-[11px] sm:text-xs font-medium tracking-wide shadow-lg pointer-events-auto">
@@ -39,11 +39,11 @@ export default function HeroSection({ onOpenResume }) {
         </div>
 
         {/* Short Hero Bio */}
-        <p className="text-white/90 text-xs sm:text-sm md:text-base leading-relaxed font-light max-w-[310px] sm:max-w-[340px] drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)]">
+        <p className="text-white/90 text-xs sm:text-sm md:text-base leading-relaxed font-light max-w-[300px] sm:max-w-[340px] drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)]">
           Hi, I'm Manya Garg, an SEO expert helping websites rank higher on Google and grow organic traffic.
         </p>
 
-        {/* Action Buttons */}
+        {/* Action Buttons: Resume Button preserved EXACTLY as instructed */}
         <div className="flex flex-wrap items-center gap-3 pt-1 pointer-events-auto">
           {/* Resume Button */}
           <button
@@ -63,17 +63,6 @@ export default function HeroSection({ onOpenResume }) {
           </button>
         </div>
 
-      </div>
-
-      {/* Floating Mini Stat Pill at Bottom Right */}
-      <div className="absolute right-6 sm:right-10 md:right-14 bottom-8 sm:bottom-12 md:bottom-14 hidden lg:flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-black/45 backdrop-blur-md border border-white/20 text-white/95 text-xs shadow-2xl pointer-events-auto z-10">
-        <div className="w-8 h-8 rounded-xl bg-[#c91117]/50 border border-white/20 flex items-center justify-center text-white">
-          <TrendingUp className="w-4 h-4" />
-        </div>
-        <div>
-          <div className="font-bold text-white text-sm">+320% Avg Growth</div>
-          <div className="text-white/70 text-[11px]">Organic Search Visibility</div>
-        </div>
       </div>
     </section>
   );
