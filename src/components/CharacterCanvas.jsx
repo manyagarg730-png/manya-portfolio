@@ -22,9 +22,9 @@ export default function CharacterCanvas() {
   // Dynamic layout & tracking points
   const layoutRef = useRef({
     faceX: window.innerWidth * 0.5,
-    faceY: window.innerHeight * 0.62,
+    faceY: window.innerHeight * 0.45,
     drawX: 0,
-    drawY: 0,
+    drawY: 50,
     drawW: window.innerWidth,
     drawH: window.innerHeight,
   });
@@ -32,7 +32,7 @@ export default function CharacterCanvas() {
   // Motion state
   const mouseState = useRef({
     x: window.innerWidth * 0.5,
-    y: window.innerHeight * 0.62,
+    y: window.innerHeight * 0.45,
     isInside: false,
     lastMoveTime: Date.now(),
   });
@@ -75,7 +75,7 @@ export default function CharacterCanvas() {
     };
   }, []);
 
-  // Responsive full-bleed canvas setup
+  // Responsive full-bleed canvas setup placing top of head right below the navbar
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -100,15 +100,19 @@ export default function CharacterCanvas() {
       let drawW, drawH, drawX, drawY;
 
       if (screenAspect >= imgAspect) {
+        // Screen is wider than 16:9
         drawW = w;
         drawH = w / imgAspect;
         drawX = 0;
-        drawY = (h - drawH) * 0.5;
+        // Position top of hair ~55px below top
+        drawY = 55;
       } else {
-        drawH = h;
-        drawW = h * imgAspect;
+        // Screen is taller than 16:9 (laptops 16:10, tablets, mobiles)
+        drawH = Math.max(h, w / imgAspect);
+        drawW = drawH * imgAspect;
         drawX = (w - drawW) * 0.5;
-        drawY = 0;
+        // Position top of hair ~55px below top
+        drawY = 55;
       }
 
       layoutRef.current = {
@@ -117,7 +121,7 @@ export default function CharacterCanvas() {
         drawW,
         drawH,
         faceX: drawX + drawW * 0.5,
-        faceY: drawY + drawH * 0.62,
+        faceY: drawY + drawH * 0.42,
       };
     };
 
