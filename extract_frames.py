@@ -13,19 +13,15 @@ cap.release()
 
 print(f"Loaded {len(raw_frames)} video frames")
 
-# Find the exact background color from raw video corners
-corners = []
-for f in raw_frames:
-    h, w, _ = f.shape
-    corners.append(f[0:10, 0:10])
-    corners.append(f[0:10, w-10:w])
-corners = np.concatenate(corners, axis=0)
-bg_bgr = np.mean(corners, axis=(0, 1)).astype(np.uint8)
-bg_rgb = [int(bg_bgr[2]), int(bg_bgr[1]), int(bg_bgr[0])]
-bg_hex = f"#{bg_rgb[0]:02x}{bg_rgb[1]:02x}{bg_rgb[2]:02x}"
-print(f"Exact Background Color (BGR): {bg_bgr} -> (RGB): {bg_rgb} -> HEX: {bg_hex}")
+def enhance_frame(frame, target_w=1920, target_h=1080):
+    # Upscale with Lanczos4 for high-definition sharpness
+    upscaled = cv2.resize(frame, (target_w, target_h), interpolation=cv2.INTER_LANCZOS4)
+    
+    # Subtle unsharp mask to make hair and eyes razor sharp
+    gaussian = cv2.GaussianBlur(upscaled, (0, 0), 1.5)
+    sharpened = cv2.addWeighted(upscaled, 1.25, gaussian, -0.25, 0)
+    return sharpened
 
-# Accurate mapping for 360 degree rotation
 def get_clean_frame_idx(angle_deg):
     angle_deg = angle_deg % 360
     if 0 <= angle_deg <= 45:
@@ -61,25 +57,13 @@ def get_clean_frame_idx(angle_deg):
 
 os.makedirs("public/frames", exist_ok=True)
 
-# Process frames with ultra-high WebP quality (98) and feathering outer edges
 for i in range(64):
     deg = (i / 64.0) * 360.0
     vf_idx = get_clean_frame_idx(deg)
-    frame = raw_frames[vf_idx].copy()
-    
-    # Clean up outer 3-pixel borders to match background perfectly to remove any codec boundary line
-    frame[0:4, :] = bg_bgr
-    frame[:, 0:4] = bg_bgr
-    frame[:, -4:] = bg_bgr
-    
-    out_path = f"public/frames/{i}.webp"
-    cv2.imwrite(out_path, frame, [cv2.IMWRITE_WEBP_QUALITY, 98])
+    enhanced = enhance_frame(raw_frames[vf_idx])
+    cv2.imwrite(f"public/frames/{i}.webp", enhanced, [cv2.IMWRITE_WEBP_QUALITY, 100])
 
-# Center frame
-center_frame = raw_frames[238].copy()
-center_frame[0:4, :] = bg_bgr
-center_frame[:, 0:4] = bg_bgr
-center_frame[:, -4:] = bg_bgr
-cv2.imwrite("public/frames/center.webp", center_frame, [cv2.IMWRITE_WEBP_QUALITY, 98])
+center_enhanced = enhance_frame(raw_frames[238])
+cv2.imwrite("public/frames/center.webp", center_enhanced, [cv2.IMWRITE_WEBP_QUALITY, 100])
 
-print("Finished extracting 64 ultra-sharp WebP frames + center.webp at Q98")
+print("Finished generating 1080p Ultra-HD WebP frames at Quality 100 with Lanczos sharpening!")

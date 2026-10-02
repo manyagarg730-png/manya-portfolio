@@ -11,17 +11,17 @@ export default function HeroSection({ onOpenResume }) {
   return (
     <section
       id="hero"
-      className="relative w-screen h-screen overflow-hidden flex flex-col justify-end bg-[#cb1419]"
+      className="relative w-screen h-screen overflow-hidden flex flex-col justify-end bg-[#c91117]"
       aria-label="Hero Introduction"
     >
-      {/* 60 FPS Zero-ghosting interactive character canvas */}
+      {/* 1080p Zero-ghosting interactive character canvas */}
       <CharacterCanvas />
 
-      {/* Hero Content Overlay: Positioned bottom-left with luxury spacing away from the character */}
-      <div className="absolute bottom-8 sm:bottom-12 md:bottom-14 left-5 sm:left-10 md:left-14 lg:left-20 z-10 max-w-[340px] sm:max-w-sm md:max-w-md space-y-3.5 sm:space-y-4 pointer-events-none">
+      {/* Hero Content Overlay: Positioned cleanly on the left */}
+      <div className="absolute bottom-8 sm:bottom-12 md:bottom-14 left-5 sm:left-10 md:left-14 lg:left-18 z-10 max-w-[320px] sm:max-w-sm md:max-w-md space-y-3.5 sm:space-y-4 pointer-events-none">
         
         {/* Status Badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white/95 text-[11px] sm:text-xs font-medium tracking-wide shadow-lg pointer-events-auto">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/45 backdrop-blur-md border border-white/20 text-white/95 text-[11px] sm:text-xs font-medium tracking-wide shadow-lg pointer-events-auto">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
           <span className="w-2 h-2 -ml-3 rounded-full bg-emerald-400"></span>
           <span>Available for SEO Projects & Consulting</span>
@@ -39,11 +39,11 @@ export default function HeroSection({ onOpenResume }) {
         </div>
 
         {/* Short Hero Bio */}
-        <p className="text-white/90 text-xs sm:text-sm md:text-base leading-relaxed font-light max-w-[320px] sm:max-w-[340px] drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)]">
+        <p className="text-white/90 text-xs sm:text-sm md:text-base leading-relaxed font-light max-w-[310px] sm:max-w-[340px] drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)]">
           Hi, I'm Manya Garg, an SEO expert helping websites rank higher on Google and grow organic traffic.
         </p>
 
-        {/* Action Buttons: Resume Button preserved EXACTLY as instructed */}
+        {/* Action Buttons */}
         <div className="flex flex-wrap items-center gap-3 pt-1 pointer-events-auto">
           {/* Resume Button */}
           <button
@@ -66,8 +66,8 @@ export default function HeroSection({ onOpenResume }) {
       </div>
 
       {/* Floating Mini Stat Pill at Bottom Right */}
-      <div className="absolute right-4 sm:right-10 bottom-8 sm:bottom-12 hidden lg:flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-black/40 backdrop-blur-md border border-white/15 text-white/90 text-xs shadow-xl pointer-events-auto">
-        <div className="w-8 h-8 rounded-xl bg-[#cb1419]/40 border border-white/20 flex items-center justify-center text-white">
+      <div className="absolute right-6 sm:right-10 md:right-14 bottom-8 sm:bottom-12 md:bottom-14 hidden lg:flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-black/45 backdrop-blur-md border border-white/20 text-white/95 text-xs shadow-2xl pointer-events-auto z-10">
+        <div className="w-8 h-8 rounded-xl bg-[#c91117]/50 border border-white/20 flex items-center justify-center text-white">
           <TrendingUp className="w-4 h-4" />
         </div>
         <div>

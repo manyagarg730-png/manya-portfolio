@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 const TOTAL_FRAMES = 64;
-const BG_COLOR = '#cb1419';
 
 // Shortest path circular angular interpolation
 function lerpAngle(current, target, factor) {
@@ -19,10 +18,10 @@ export default function CharacterCanvas() {
   const imagesRef = useRef([]);
   const centerImageRef = useRef(null);
 
-  // Dynamic face center and drawing dimensions
+  // Dynamic layout & tracking points
   const layoutRef = useRef({
-    faceX: window.innerWidth * 0.55,
-    faceY: window.innerHeight * 0.4,
+    faceX: window.innerWidth * 0.5,
+    faceY: window.innerHeight * 0.38,
     drawX: 0,
     drawY: 0,
     drawW: window.innerWidth,
@@ -31,8 +30,8 @@ export default function CharacterCanvas() {
 
   // Motion state
   const mouseState = useRef({
-    x: window.innerWidth * 0.55,
-    y: window.innerHeight * 0.4,
+    x: window.innerWidth * 0.5,
+    y: window.innerHeight * 0.38,
     isInside: false,
     lastMoveTime: Date.now(),
   });
@@ -75,7 +74,7 @@ export default function CharacterCanvas() {
     };
   }, []);
 
-  // Responsive layout & canvas setup
+  // Responsive edge-to-edge canvas sizing (Zero seams)
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -93,30 +92,24 @@ export default function CharacterCanvas() {
 
       ctx.scale(dpr, dpr);
 
-      // 16:9 Aspect Ratio of the raw high-res footage
-      const imgAspect = 1280 / 720;
+      // Edge-to-edge cover math ensuring 100% zero-seam full bleed
+      const imgAspect = 1920 / 1080; // 16:9 HD
+      const screenAspect = w / h;
+
       let drawW, drawH, drawX, drawY;
 
-      if (w >= 1024) {
-        // Desktop / Laptop: Beautiful chest-up portrait proportioned naturally
-        drawH = Math.min(h * 0.95, w / imgAspect);
-        drawW = drawH * imgAspect;
-        // Shift slightly right of center to leave clean space for left-aligned text
-        drawX = w * 0.55 - drawW * 0.5;
-        // Bottom aligned
-        drawY = h - drawH;
-      } else if (w >= 640) {
-        // Tablet
-        drawH = Math.min(h * 0.88, w / imgAspect);
-        drawW = drawH * imgAspect;
-        drawX = (w - drawW) * 0.5;
-        drawY = h - drawH;
+      if (screenAspect >= imgAspect) {
+        // Screen is wider than 16:9
+        drawW = w;
+        drawH = w / imgAspect;
+        drawX = 0;
+        drawY = (h - drawH) * 0.45;
       } else {
-        // Mobile (360px - 480px): Natural fit centered nicely
-        drawH = Math.min(h * 0.72, 540);
-        drawW = drawH * imgAspect;
+        // Screen is taller than 16:9
+        drawH = h;
+        drawW = h * imgAspect;
         drawX = (w - drawW) * 0.5;
-        drawY = h * 0.08;
+        drawY = 0;
       }
 
       layoutRef.current = {
@@ -167,15 +160,15 @@ export default function CharacterCanvas() {
     let animationFrameId;
 
     const render = () => {
+      const { drawX, drawY, drawW, drawH, faceX, faceY } = layoutRef.current;
       const w = window.innerWidth;
       const h = window.innerHeight;
-      const { drawX, drawY, drawW, drawH, faceX, faceY } = layoutRef.current;
 
       const dx = mouseState.current.x - faceX;
       const dy = mouseState.current.y - faceY;
       const dist = Math.sqrt(dx * dx + dy * dy);
 
-      // Deadzone threshold for direct eye contact (~12% of screen dimension)
+      // Deadzone threshold for direct eye contact (~12% screen radius)
       const deadzoneRadius = Math.min(w, h) * 0.12;
       const timeSinceMove = Date.now() - mouseState.current.lastMoveTime;
 
@@ -196,11 +189,7 @@ export default function CharacterCanvas() {
         targetFrame = imagesRef.current[frameIndex];
       }
 
-      // Fill canvas background
-      ctx.fillStyle = BG_COLOR;
-      ctx.fillRect(0, 0, w, h);
-
-      // Draw EXACTLY ONE frame at 100% opacity with maximum sharpness and zero ghosting
+      // Draw EXACTLY ONE frame at 100% opacity covering edge-to-edge (no seams, no lines)
       if (targetFrame && targetFrame.complete && targetFrame.naturalWidth > 0) {
         ctx.globalAlpha = 1.0;
         ctx.imageSmoothingEnabled = true;
@@ -216,10 +205,10 @@ export default function CharacterCanvas() {
   }, [isReady]);
 
   return (
-    <div className="absolute inset-0 w-full h-full pointer-events-none select-none overflow-hidden bg-[#cb1419]">
+    <div className="absolute inset-0 w-full h-full pointer-events-none select-none overflow-hidden bg-[#c91117]">
       {/* Loading placeholder */}
       {!isReady && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#cb1419] z-20 transition-opacity duration-500">
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#c91117] z-20 transition-opacity duration-500">
           <div className="w-10 h-10 border-2 border-white/20 border-t-white rounded-full animate-spin mb-3"></div>
           <span className="text-white/90 text-xs tracking-widest uppercase font-medium">
             Loading Experience ({Math.round((loadedCount / (TOTAL_FRAMES + 1)) * 100)}%)
@@ -227,12 +216,11 @@ export default function CharacterCanvas() {
         </div>
       )}
 
-      {/* Rock-solid motionless canvas with NO 3D transform and NO cheap border box */}
+      {/* Rock-solid motionless canvas with edge-to-edge cover */}
       <canvas
         ref={canvasRef}
         className="block w-full h-full"
         style={{
-          backgroundColor: BG_COLOR,
           transform: 'none',
         }}
       />
