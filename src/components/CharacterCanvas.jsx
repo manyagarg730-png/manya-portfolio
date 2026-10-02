@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 const TOTAL_FRAMES = 64;
+const BG_COLOR = '#c91117';
 
 // Shortest path circular angular interpolation
 function lerpAngle(current, target, factor) {
@@ -20,8 +21,8 @@ export default function CharacterCanvas() {
 
   // Dynamic layout & tracking points
   const layoutRef = useRef({
-    faceX: window.innerWidth * 0.52,
-    faceY: window.innerHeight * 0.42,
+    faceX: window.innerWidth * 0.5,
+    faceY: window.innerHeight * 0.62,
     drawX: 0,
     drawY: 0,
     drawW: window.innerWidth,
@@ -30,8 +31,8 @@ export default function CharacterCanvas() {
 
   // Motion state
   const mouseState = useRef({
-    x: window.innerWidth * 0.52,
-    y: window.innerHeight * 0.42,
+    x: window.innerWidth * 0.5,
+    y: window.innerHeight * 0.62,
     isInside: false,
     lastMoveTime: Date.now(),
   });
@@ -74,7 +75,7 @@ export default function CharacterCanvas() {
     };
   }, []);
 
-  // Responsive edge-to-edge canvas sizing (Zero seams, natural zoom)
+  // Responsive full-bleed canvas setup
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -92,26 +93,18 @@ export default function CharacterCanvas() {
 
       ctx.scale(dpr, dpr);
 
-      // 16:9 HD ratio
+      // 16:9 1080p full frame
       const imgAspect = 1920 / 1080;
       const screenAspect = w / h;
 
       let drawW, drawH, drawX, drawY;
 
-      if (w >= 1024) {
-        // Desktop: Proportioned naturally, shifted slightly right and down for perfect headroom
-        drawH = Math.max(h, w / imgAspect);
-        drawW = drawH * imgAspect;
-        drawX = (w - drawW) * 0.5 + Math.min(w * 0.08, 100);
-        drawY = Math.max(0, (h - drawH) * 0.5 + h * 0.04);
-      } else if (w >= 640) {
-        // Tablet
-        drawH = Math.max(h, w / imgAspect);
-        drawW = drawH * imgAspect;
-        drawX = (w - drawW) * 0.5;
-        drawY = Math.max(0, (h - drawH) * 0.5 + h * 0.03);
+      if (screenAspect >= imgAspect) {
+        drawW = w;
+        drawH = w / imgAspect;
+        drawX = 0;
+        drawY = (h - drawH) * 0.5;
       } else {
-        // Mobile (360px - 480px)
         drawH = h;
         drawW = h * imgAspect;
         drawX = (w - drawW) * 0.5;
@@ -124,7 +117,7 @@ export default function CharacterCanvas() {
         drawW,
         drawH,
         faceX: drawX + drawW * 0.5,
-        faceY: drawY + drawH * 0.38,
+        faceY: drawY + drawH * 0.62,
       };
     };
 
@@ -197,6 +190,8 @@ export default function CharacterCanvas() {
 
       // Draw EXACTLY ONE frame at 100% opacity covering edge-to-edge
       if (targetFrame && targetFrame.complete && targetFrame.naturalWidth > 0) {
+        ctx.fillStyle = BG_COLOR;
+        ctx.fillRect(0, 0, w, h);
         ctx.globalAlpha = 1.0;
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
@@ -228,6 +223,7 @@ export default function CharacterCanvas() {
         className="block w-full h-full"
         style={{
           transform: 'none',
+          backgroundColor: BG_COLOR,
         }}
       />
     </div>
